@@ -1,0 +1,133 @@
+Como implementar o n8n na API para atuar na higienização e gerar relatórios sobre as modificações dos documentos higienizados. O n8n  
+é uma ferramenta para IA onde é possível gerar um fluxo de processos, conversação(como o chatbot) e documentos.
+-> Criar uma conta de testes na OpenAI ou DeepSeek para testar em fase de desenvolvimento.
+-> Criar os fluxos de trablho no n8n e testar.
+
+Ele parece com o Node Red criando fluxos para a execução das tarefas, e através de endpoints ou mensagens para o chat é possível 
+executar as tarefas.
+
+Vamos usar a versão communit, a documentação está no site site: https://n8n.io/
+
+Eu tenho que criar os endpoints na API que vão gerar a consulta no n8n.
+
+Criar um banco de dados no Postgres e configurar as variáveis de ambiente na máquina.
+
+1-Higienizar os dados: Criar um fluxo onde ele recebe um arquivo CSV (ou JSON), aplica regras de higienização (como remoção de 
+espaços, normalização de caracteres, etc.) e envia os dados limpos para o banco de dados.
+
+2-Gerar relatórios: Podemos armazenar logs das alterações feitas e gerar um relatório automático em PDF, CSV ou enviar para um 
+serviço como Google Sheets.
+
+3-Monitoramento: Configurar alertas para identificar problemas nos dados antes de serem armazenados.
+
+4-Integração com IA: Se necessário, o n8n pode conectar com APIs de IA para processamento avançado dos dados.
+
+A rede versao_docker_default não existe no seu ambiente de trabalho. Para corrigir isso, siga um dos caminhos abaixo:
+
+Opção 1: Criar a rede manualmente
+Se o docker-compose.yml depende dessa rede externa, crie-a antes de subir os contêineres:
+
+docker network create versao_docker_default
+docker-compose up -d
+
+Opção 2: Modificar o docker-compose.yml para criar a rede automaticamente
+Se não precisar que a rede seja externa, edite o docker-compose.yml e altere esta parte:
+
+networks:
+  versao_docker_default:
+    external: true
+
+Para:
+
+networks:
+  versao_docker_default:
+    driver: bridge
+
+Depois, suba os contêineres novamente:
+
+docker-compose down
+docker-compose up -d
+
+Esse erro indica que a rede versao_docker_default foi declarada como externa no seu docker-compose.yml, mas o Docker não a encontrou.
+
+Como resolver:
+
+Verificar se a rede existe
+Execute o comando abaixo para listar as redes disponíveis no Docker:
+
+docker network ls
+
+Se a rede versao_docker_default não aparecer na lista, você precisará criá-la manualmente.
+
+Criar a rede manualmente
+Caso a rede não exista, crie-a com:
+
+docker network create versao_docker_default
+
+Remover a dependência de rede externa (caso não precise dela)
+
+Se a rede não for necessária, remova ou comente a linha no docker-compose.yml onde ela está declarada como external. Por exemplo:
+
+networks:
+  versao_docker_default:
+    external: true
+	
+Altere para:
+
+networks:
+  versao_docker_default:
+    driver: bridge
+
+Isso faz com que o próprio docker-compose crie a rede automaticamente.
+
+Reiniciar o docker-compose
+Após as alterações, rode:
+
+docker-compose down && docker-compose up -d
+
+Se você está rodando localmente no Docker, o domínio e subdomínio podem ser configurados manualmente. Aqui está como fazer:
+
+1. Definir o domínio e subdomínio no .env
+Abra o arquivo .env e adicione:
+
+DOMAIN_NAME=localhost
+SUBDOMAIN=api.localhost
+
+Se precisar de outro subdomínio, pode mudar api.localhost para o que quiser, como admin.localhost ou n8n.localhost.
+
+2. Adicionar os subdomínios ao /etc/hosts (Linux/macOS) ou C:\Windows\System32\drivers\etc\hosts (Windows)
+Edite o arquivo hosts e adicione estas linhas no final:
+
+127.0.0.1   api.localhost
+127.0.0.1   n8n.localhost
+127.0.0.1   admin.localhost
+
+Isso garante que quando você acessar http://api.localhost, ele redirecione corretamente para seu Docker.
+
+3. Configurar o docker-compose.yml para aceitar subdomínios
+Se estiver usando Docker Compose, edite o docker-compose.yml e adicione:
+
+services:
+  app:
+    container_name: meu-app
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DOMAIN_NAME=localhost
+      - SUBDOMAIN=api.localhost
+    networks:
+      - minha-rede
+
+networks:
+  minha-rede:
+    driver: bridge
+
+Isso garante que seu container reconheça os valores do .env.
+
+4. Reiniciar os containers Docker
+Após fazer as alterações, rode:
+
+docker-compose down && docker-compose up -d
+
+Agora, você pode acessar seu projeto em http://api.localhost.
