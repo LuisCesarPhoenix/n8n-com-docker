@@ -1,99 +1,99 @@
-version: '3.8'  
+version: '3.8'
 # Define a versão do Docker Compose a ser usada. A versão 3.8 é uma das mais recentes e é recomendada para maior compatibilidade.
 
-services:  
+services:
 # Define os serviços (containers) que serão criados.
 
-  postgres:  
+  postgres:
   # Nome do serviço que representa o banco de dados PostgreSQL.
 
-    image: postgres:15  
+    image: postgres:15
     # Define a imagem do PostgreSQL que será usada. Neste caso, a versão 15.
 
-    container_name: postgres_n8n  
+    container_name: postgres_n8n
     # Define o nome do container que será criado para o PostgreSQL.
 
-    restart: always  
+    restart: always
     # Configura o container para reiniciar automaticamente caso pare ou o sistema seja reiniciado.
 
-    environment:  
+    environment:
     # Define as variáveis de ambiente do PostgreSQL.
 
-      POSTGRES_DB: n8n  
+      POSTGRES_DB: n8n
       # Nome do banco de dados que será criado automaticamente.
 
-      POSTGRES_USER: postgres  
+      POSTGRES_USER: postgres
       # Nome de usuário para acessar o banco de dados.
 
-      POSTGRES_PASSWORD: bocetadoce  
+      POSTGRES_PASSWORD: bocetadoce
       # Senha do usuário para acessar o banco de dados.
 
-    ports:  
+    ports:
     # Mapeia as portas do container para a máquina local.
 
-      - "5432:5432"  
+      - "5432:5432"
       # Expõe a porta 5432 do PostgreSQL no host, permitindo conexão externa.
 
-    volumes:  
+    volumes:
     # Define volumes persistentes para armazenar os dados do PostgreSQL.
 
-      - postgres_data:/var/lib/postgresql/data  
+      - postgres_data:/var/lib/postgresql/data
       # Monta um volume para armazenar os dados do banco de dados, evitando perda de informações ao reiniciar o container.
 
-  n8n:  
+  n8n:
   # Nome do serviço que representa a aplicação n8n.
 
-    image: n8nio/n8n  
+    image: n8nio/n8n
     # Define a imagem oficial do n8n que será usada.
 
-    container_name: n8n  
+    container_name: n8n
     # Define o nome do container do n8n.
 
-    restart: always  
+    restart: always
     # Configura o container para reiniciar automaticamente caso pare ou o sistema seja reiniciado.
 
-    depends_on:  
+    depends_on:
     # Define que o n8n só será iniciado depois que o serviço "postgres" estiver pronto.
 
-      - postgres  
+      - postgres
 
-    environment:  
+    environment:
     # Define as variáveis de ambiente do n8n.
 
-      DB_TYPE: postgresdb  
+      DB_TYPE: postgresdb
       # Define o tipo de banco de dados que será usado pelo n8n.
 
-      DB_POSTGRESDB_HOST: postgres  
+      DB_POSTGRESDB_HOST: postgres
       # Define o host do banco de dados. Como o serviço PostgreSQL está no mesmo `docker-compose`, usamos o nome do serviço "postgres".
 
-      DB_POSTGRESDB_DATABASE: n8n  
+      DB_POSTGRESDB_DATABASE: n8n
       # Define o nome do banco de dados que o n8n irá utilizar.
 
-      DB_POSTGRESDB_USER: postgres  
+      DB_POSTGRESDB_USER: postgres
       # Define o usuário que o n8n usará para acessar o banco de dados.
 
-      DB_POSTGRESDB_PASSWORD: bocetadoce  
+      DB_POSTGRESDB_PASSWORD: bocetadoce
       # Define a senha do banco de dados para autenticação.
 
-    ports:  
+    ports:
     # Mapeia as portas do container para a máquina local.
 
-      - "5678:5678"  
+      - "5678:5678"
       # Expõe a porta 5678 do n8n no host, permitindo acesso via navegador.
 
-    volumes:  
+    volumes:
     # Define volumes persistentes para armazenar as configurações do n8n.
 
-      - n8n_data:/home/node/.n8n  
+      - n8n_data:/home/node/.n8n
       # Monta um volume para armazenar os dados da aplicação n8n, garantindo que as configurações não sejam perdidas ao reiniciar o container.
 
-volumes:  
+volumes:
 # Define volumes para armazenamento persistente dos dados.
 
-  postgres_data:  
+  postgres_data:
   # Volume para armazenar os dados do PostgreSQL.
 
-  n8n_data:  
+  n8n_data:
   # Volume para armazenar os dados do n8n.
 
 # Resumo
