@@ -40,7 +40,7 @@ WORKDIR /tmp
 COPY package.json ./
 RUN corepack enable && corepack prepare --activate
 # - Define `/tmp` como diretório de trabalho temporário.
-# - Copia `package.json` para `/tmp` (provavelmente para que dependências possam ser instaladas posteriormente).
+# - Copia `package.json` para `/tmp` (para que dependências possam ser instaladas posteriormente).
 # - Ativa o `corepack` para gerenciar pacotes globalmente.
 
 # Remove arquivos desnecessários para reduzir o tamanho da imagem final
